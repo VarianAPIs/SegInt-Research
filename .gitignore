@@ -1,0 +1,6 @@
+# Git Ignore for the project.
+
+segint_venv/
+files/
+planning/
+**/__pycache__

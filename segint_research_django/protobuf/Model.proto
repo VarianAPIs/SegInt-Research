@@ -1,0 +1,527 @@
+/* 
+***
+InnerEye
+Copyright (c) Microsoft Corporation 
+All rights reserved. 
+MIT License 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the Software), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+***
+*/
+// [START declaration]
+syntax = "proto3";
+package Radiomics;
+
+import "Primitives3D.proto";
+import "google/protobuf/timestamp.proto";
+// [END declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Microsoft.Radiomics.Segmentation.API.Proto3";
+// [END csharp_declaration]
+
+// Constraints for a channel input
+message ModelChannelConstraints
+{
+	enum ModalityTypes 
+	{
+		CT = 0;
+		CTA = 1;
+		MR_T1 = 2;
+		MR_T2 = 3;
+		MR_GAD = 4;
+		MR_FLAIR = 5;
+		PET = 6;
+	};
+
+	// Modalities allowed
+	repeated ModalityTypes AcceptedModalities = 1;
+	// Minimimum spacing allowed for this model in millimeters.
+	Vector3D SpacingMinInMillimeters = 2;
+	// Maximum spacing allowed for this model in millimeters.
+	Vector3D SpacingMaxInMillimeters = 3;
+	// Minimum number of voxels in the X,Y,Z dimensions.
+	Vector3D DimensionsMinInPixels = 4;
+	// Maximum number of voxels in the X,Y,Z dimensions.
+	Vector3D DimensionsMaxInPixels = 5;
+	// If this model channel requires original data
+	bool OriginalDataRequired = 6;	
+	// If the volume is Axial aligned
+	bool IsAxial = 7;
+}
+
+// Constraints that are global to a specific model
+message ModelConstraints
+{
+	// List of all body part examined from here: http://dicom.nema.org/dicom/2013/output/chtml/part16/chapter_L.html
+	enum BodyPartExaminedType 
+	{
+		Abdomen = 0;
+		AbdomenPelvis = 1;
+		Adrenal = 2;
+		Ankle = 3;
+		Aorta = 4;
+		Axilla = 5;
+		Back = 6;
+		Bladder = 7;
+		Brain = 8;
+		Breast = 9;
+		Bronchus = 10;
+		Buttock = 11;
+		Calcaneus = 12;
+		Calf = 13;
+		Carotid = 14;
+		Cerebellum = 15;
+		Cspine = 16;
+		CtSpine = 17;
+		Cervix = 18;
+		Cheek = 19;
+		Chest = 20;
+		ChestAbdomen = 21;
+		ChestAbdomenPelvis = 22;
+		CircleOfWillis = 23;
+		Clavicle = 24;
+		Coccyx = 25;
+		Colon = 26;
+		Cornea = 27;
+		CoronaryArtery = 28;
+		Duodenum = 29;
+		Ear = 30;
+		Elbow = 31;
+		WholeBody = 32;
+		Esophagus = 33;
+		Extremity = 34;
+		Eye = 35;
+		Eyelid = 36;
+		Face = 37;
+		Femur = 38;
+		Finger = 39;
+		Foot = 40;
+		Gallbladder = 41;
+		Hand = 42;
+		Head = 43;
+		HeadNeck = 44;
+		Heart = 45;
+		Hip = 46;
+		Humerus = 47;
+		Ileum = 48;
+		Ilium = 49;
+		IAC = 50;
+		Jaw = 51;
+		Jejunum = 52;
+		Kidney = 53;
+		Knee = 54;
+		Larynx = 55;
+		Liver = 56;
+		Leg = 57;
+		LSpine = 58;
+		LSSpine = 59;
+		Lung = 60;
+		Maxilla = 61;
+		Mediastinum = 62;
+		Mouth = 63;
+		Neck = 64;
+		NeckChest = 65;
+		NeckChestAbdomen = 66;
+		NeckChestAbdomenPelvis = 67;
+		Nose = 68;
+		Orbit = 69;
+		Ovary = 70;
+		Pancreas = 71;
+		Parotid = 72;
+		Patella = 73;
+		Pelvis = 74;
+		Penis = 75;
+		Pharynx = 76;
+		Prostate = 77;
+		Rectum = 78;
+		Rib = 79;
+		SSPine = 80;
+		Scalp = 81;
+		Scapula = 82;
+		Sclera = 83;
+		Scrotum = 84;
+		Shoulder = 85;
+		Skull = 86;
+		Spine = 87;
+		Spleen = 88;
+		Sternum = 89;
+		Stomach = 90;
+		SumMandibular = 91;
+		TMJoint = 92;
+		Testis = 93;
+		Thigh = 94;
+		TSpine = 95;
+		TLSpine = 96;
+		Thumb = 97;
+		Thymus = 98;
+		Thyroid = 99;
+		Toe = 100;
+		Tongue = 101;
+		Trachea = 102;
+		Arm = 103;
+		Ureter = 104;
+		Urethra = 105;
+		Uterus = 106;
+		Vagina = 107;
+		Vulva = 108;
+		Wrist = 109;
+		Zygoma = 110;
+	};
+	// Body part examined
+	repeated BodyPartExaminedType BodyPartsExamined = 1;
+	// Gender types
+	enum GenderType {
+		Male = 0;
+		Female = 1;
+		Any = 2;
+	};
+	// Gender expected for the inputs of this model
+	GenderType Gender = 2;
+}
+
+// A description of a required input channel for a model
+message ModelChannelDescription 
+{
+	// The identifier for this channel
+	string ChannelID = 1;
+	// A sequence of constraints on any data passed through this channel to the model 
+	ModelChannelConstraints Constraints = 2;
+}
+
+// Color RGB
+message ColorRGB
+{
+	// Value between [0,255] encoding the red component of the color
+	uint32 R = 1;
+	// Value between [0,255] encoding the green component of the color
+	uint32 G = 2;
+	// Value between [0,255] encoding the blue component of the color
+	uint32 B = 3;
+}
+
+// Description of output structures generated by a Model
+message Structure
+{
+	// Localized name of the structure.
+	string Name = 1;
+	// Color of the structure.
+	ColorRGB Color = 2;
+	enum StructureType 
+	{
+		// The structure represents the external boundary of the patient
+		External = 0;
+		// The structure represents an anatomical organ
+		Organ = 1;
+		// The structure represents a lesion or other structure
+		Unknown = 2;
+	};
+	// The type of the structure.
+	StructureType Type = 3;
+	// The unique FMA (Foundational Model of Anatomy) code for this structure.
+	uint32 FMACode = 4;
+	// The input channel identifier this structure is linked to.
+	string InputChannelID = 5;
+	// The unique identifier for this structure
+	string StructureID = 6;
+}
+
+// Describes the status of a ModelVersion within a regulatory framework 
+message RegulatoryFramework
+{
+	// The framework under which the model is regulated. e.g. "FDA", "CE"
+	string Framework = 1;
+	// The status of the model within the Framework
+	enum StatusEnum
+	{
+		// The model may be used clinically within institutions requiring conformity with regulations defined in the Framework
+		Clinical = 0;
+		// The model has been registered as an investigational device within the regulatory framework
+		Investigational = 1;
+		// The model has been recalled and is no longer available for processing
+		Recalled = 2;
+		// The model has been withdrawn from use and is no longer available for processing
+		Withdrawn = 3;
+	};
+	StatusEnum Status = 4;
+	// The Unique Device Identifier for the model under the given regulatory framework
+	string UDI = 5;
+	// The official Manufacturer of the model within the regulatory Framework
+	string Manufacturer = 6;
+	// A url describing details of the model version under the regulatory framework
+	string DetailsURL = 7;
+	// Day that this framework starts to apply
+	google.protobuf.Timestamp ReleaseDate = 8;
+}
+
+// A specific machine learning model version
+// API can localize this based on the Accept-Language Header
+message ModelVersion
+{
+	// Unique Identifier for the model
+	string ID = 1;
+	// A localized description of this version of the model
+	string VersionDescription = 2; // Agree number of characters
+	// DateTime when the model was created
+	google.protobuf.Timestamp CreatedOn = 3;
+	// The output structures generated by this model.
+	repeated Structure Structures = 5;
+	// Number of credits required to execute this model
+	double NumberOfCreditsRequired = 6;
+	// The major version of this model
+	uint32 MajorVersion = 7;
+	// The minor version of this model
+	uint32 MinorVersion = 8;
+	// The current regulatory status of this model version. If there are no frameworks this model version is intended
+	// for research use only.
+	repeated RegulatoryFramework RegulatoryFrameworks = 9;
+	// The RFC5646 language code of the translation of this ModelVersion https://tools.ietf.org/html/rfc5646
+	string LanguageCode = 10;
+}
+
+// The family grouping of machine learning model versions
+message ModelFamily
+{
+	// The canonical name for the model family description. This is equivalent to the "en" language encoding of FamilyDescription.Name
+	string CanonicalName = 1;
+	// The model family description
+	ModelFamilyDescription FamilyDescription = 2;
+	// The list of versions for this model name in order of ModelVersion.CreatedOn
+	repeated ModelVersion ModelVersions = 3;
+	// The RFC5646 language code of the translation of this ModelFamily https://tools.ietf.org/html/rfc5646
+	string LanguageCode = 4;
+}
+
+// The model family grouping description.
+message ModelFamilyDescription
+{
+	// The localized Model name, a conjunction of {Domain-AnatomicalRegion-PrimaryStructure-Modalities}
+	string Name = 2;
+	// A localized description of the model
+	string Description = 3;
+	// A concatenation of 2 character abbreviations of localized clinical domains where this model may be used. e.g. "IO.RT" to 
+	// indicate Interventional Oncology and Radiotherapy
+	string ClinicalDomain = 4;
+	// A localized string representing the primary anatomical region of images suitable for processing by this model family. e.g.
+	// { Brain, HeadNeck, Thorax, Abdomen, Pelvis, UpperLimbs, LowerLimbs …}
+	string AnatomicalRegion = 5;
+	// The localized primary structure segmented by this model family.
+	string PrimaryStructure = 6;
+	// A concatenation of abbreviations of localized modalities used by this model family: e.g. 
+	// {CT = Computed Tomography}
+	// {CTA = Computed Tomography Angiography}
+	// {T1c = MR T1 weighted contrast enhanced}
+	// {Flair = MR Flair}
+	// {T2 = MR T2 weighted}
+	string Modalities = 7;
+	// Inputs required by models within this family
+	repeated ModelChannelDescription InputChannels = 8;
+	// Common constraints for all models within this family
+	ModelConstraints Constraints = 9;
+}
+
+// Collection of machine learning models
+message ModelsCollection
+{
+	repeated ModelFamily Models = 1;
+}
+
+// Describes an input channel for a machine learning job
+message ModelInputChannel
+{
+	// The input ChannelID that must have a 1:1 correspondance with the ModelChannelDescriptions
+	// in the model you wish to exercise
+	string ChannelID = 1;
+	// The calibrated volume data for this channel
+	CalibratedVolume3D CalibratedVolume = 2;
+	// Client unique identifier for this volume. This must not contain any identifiable information
+	string VolumeID = 3;
+}
+
+// Describes inputs for a machine learning job
+message ModelInput 
+{	
+	// Client details
+	ClientInformation ClientInformation = 1;
+	// The list of input channels corresponding with the ModelChannelDescription of the Model
+	// you wish to exercise
+	repeated ModelInputChannel Channels = 2;
+}
+
+// Describes an output channel from a machine learning job. Each anatomical structure or
+// structure group will have its own channel
+message ModelOutputChannel 
+{
+	//  The structure that has been segmented
+	Structure Structure = 1;
+	// A volume data as a bool value type where 0 = background, 1 = foreground
+	VolumeData3D Volume = 2;
+}
+
+// A collection of structures and masks defining the output of a machine learning job
+message ModelOutput
+{
+	// The sequence of structures that have been identified by the model.
+	repeated ModelOutputChannel Channels = 1;
+	// The unique model idenfier defining the ModelVersion that generated the output
+	string ModelID = 2;
+	// The version of the service deployment that generated the output
+	string ProcesserVersion = 3;
+	// The RFC5646 language code of the translation of this ModelOutput https://tools.ietf.org/html/rfc5646
+	string LanguageCode = 4;
+}
+
+// Encodes progress of a machine learning job
+// To check for termination use Progress == 100 or Errors != Empty
+message SegmentationProgress 
+{
+	// Progress indicator [0,100] where 100 indicated then the segmentation is done
+	uint32 Progress = 1;
+	// Any errors encountered during processing
+	string Errors = 2;
+	// The error codes encode API programming errors and run-time errors - see Errors string field for more details.
+	enum ErrorCodes {
+		// No errors occurred
+		None = 0;
+		// An internal error occurred. You should retry the segmentation.
+		InternalError = 1;
+		// A client error occured, but we do not have an error code for this exception.
+		UnknownClientError = 2;
+		// The provided compression type for the volume did not match the volume data.
+		DecompressionError = 3;
+		// The length of the volume data did not match the volume width * height * depth.
+		DecompressionBufferSizeMismatch = 4;
+	};
+	// The error code
+	ErrorCodes ErrorCode = 3;
+}
+
+// Data returned by the server on a call to begin segmentation
+message SegmentationTask
+{
+	// The unique ID of this segmentation task
+	string SegmentationID = 1;
+	// The time at which the model processing began
+	google.protobuf.Timestamp StartTime = 2;
+}
+
+// Client information
+message ClientInformation
+{
+	// The current version of the software calling the segmentation service.
+	string SoftwareVersion = 1;
+}
+
+// Comments on individual structure quality
+message StructureComment
+{	
+	// The ID of the structure this comment is for.
+	string StructureID = 1;
+	// Any comments for the specific structure.
+	string Comments = 2;
+	// Rating of the structure between 0 to 1 inclusive. Please leave as null if no rating has been provided.
+	DoubleValue Score = 3;
+}
+
+// Feedback for a segmentation task.
+message SegmentationFeedback
+{
+	// Client details.
+	ClientInformation ClientInformation = 1;
+	// Identifier for the segmentation request.
+	string SegmentationID = 2;
+	// If the user approved the segmentation or not.
+	bool SegmentationAccepted = 3;
+	// Overall feedback comments.
+	string GeneralComments = 4;
+	// Rating of the structure between 0 to 1 inclusive. Please leave as null if no rating has been provided.
+	DoubleValue GeneralScore = 5;
+	// Comments per structure (every structure must exist for the executed model).
+	repeated StructureComment StructureComments = 6;
+}
+
+message Credits
+{
+	// The total number of credits for an authenticated user.
+	double TotalCredits = 1;
+	// If the user has low credits, this will be set to true.
+	bool DisplayCreditsWarning = 2;
+	// A localised warning message for users when credits are running 'low'.
+	string CreditsWarningMessage = 3;
+	// The RFC5646 language code of the credits warning message https://tools.ietf.org/html/rfc5646
+	string LanguageCode = 4;
+}
+
+message SegmentationTelemetry
+{
+	// Client details
+	ClientInformation ClientInformation = 1;
+	// Start segmentation request time in milliseconds
+	uint32 UploadTimeInMilliseconds = 2;
+	// Time waiting from Start segmentation response to fetch the results in milliseconds
+	uint32 SegmentationWaitInMilliseconds = 3;
+	// Time for request segmentation result
+	uint32 SegmentationDownloadInMilliseconds = 4;
+	// Number of retries done during the entire process because of timeouts or network errors or server not available.
+	uint32 NumberOfRetries = 5;
+	// Model identifier
+	string ModelID = 6;
+	// Segmentation identifier
+	string SegmentationID = 7;
+	// Any client specific error. E.g: timeout, connection refused, 
+	enum ClientErrorType {
+		None = 0;
+		ConnectionError = 1;
+		InternalClientError = 2;
+		ProgressTimeout = 3; // If we dont get a result after 20 min
+	};
+	ClientErrorType ClientError = 8;
+	// Any debugging information specific to the client error.
+	string ClientErrorInformation = 9;
+}
+
+// Message sent when validation of requests fails within the API. This is treated as a programming error and should not 
+// occur in production.
+message BadRequestResponse
+{
+	// The error message 
+	string ErrorMessage = 1;
+
+	// Details of the exception raised internally
+	string ExceptionDetails = 2;
+}
+
+// The API information message
+message ApiInformation
+{
+	// The version of the API
+	string Version = 1;
+}
+
+// The vendor status message
+message VendorStatus {
+	// The number of credits available to this client.
+	double TotalCredits = 1;
+	// The translated warning message (based on the 'Accept-Language' header) when the number of credits are running low. 
+	string LowCreditsWarningMessage = 2;
+	// The configured country code using ISO_3166-1 Alpha-2 Code E.g. Andorra=AD  https://en.wikipedia.org/wiki/ISO_3166-1
+	string ClientCountryCode = 3;
+	// The current status of the segmentation service
+	enum VendorServiceStatus {
+	NotAvailableInCountrySpecified = 0;
+	Available = 1;
+	};
+	VendorServiceStatus SegmentationServiceStatus = 4;
+	// The configured API traffic manager address of the service.
+	string SegmentationServiceUrl = 5;
+	// The available data center locations for processing segmentation tasks e.g. East-US, West-US.
+	repeated string AvailableSegmentationServiceLocations = 6;
+	// The translated vendor name  (based on the 'Accept-Language' header).
+	string VendorName = 7;
+	// The translated vendor description as a HTML string (based on the 'Accept-Language' header).
+	string VendorDescriptionHtml = 8;
+	// The RFC5646 language code of the vendor status message https://tools.ietf.org/html/rfc5646
+	string LanguageCode = 9;
+}

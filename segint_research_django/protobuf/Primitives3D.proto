@@ -1,0 +1,92 @@
+/* 
+***
+InnerEye
+Copyright (c) Microsoft Corporation 
+All rights reserved. 
+MIT License 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the Software), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
+THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+***
+*/
+// [START declaration]
+syntax = "proto3";
+package Radiomics;
+// [END declaration]
+
+// [START csharp_declaration]
+option csharp_namespace = "Microsoft.Radiomics.Segmentation.API.Proto3";
+// [END csharp_declaration]
+
+// [START messages]
+// A 3D Vector
+message Vector3D
+{
+	// Vector X Component
+	double X = 1;
+	// Vector Y Component
+	double Y = 2;
+	// Vector Z Component
+	double Z = 3;
+}
+
+// An affine 3D transform
+message Transform3D
+{
+	// A unit vector that is the image of the X Axis
+	Vector3D XAxisDirection = 1;
+	// A unit vector that is the image of the Y Axis
+	Vector3D YAxisDirection = 2;
+	// A unit vector that is the image of the Z Axis
+	Vector3D ZAxisDirection = 3;
+	// The size of each voxel in mm
+	Vector3D VoxelScalingInMM = 4;
+	// The origin of the coordinate system.
+	Vector3D Origin = 5;
+}
+
+// A calibrated volumetric array.
+message CalibratedVolume3D
+{
+	// The transform that maps integer voxel coordinates to real world positions
+	Transform3D DataTransform = 4;
+	// The volume data. The DataType of the data must be VarInt32Short and must represent calibrated values (e.g. Hounsfield units)
+	VolumeData3D Volume = 2;
+}
+
+// Volume message to define the volume data, dimensions, data type, and compression method applied to the voxel data.
+message VolumeData3D
+{
+	// The value type of the uncompressed data
+	enum DataTypes {
+	    // A little endian encoded 2 byte value per voxel representing a signed 16bit integer
+		LittleEndianSignedInt16 = 0;
+		// A single unsigned byte value per voxel where 0 represents background and 1 represents a voxel is inside a given structure
+		Byte = 1;
+	};
+	// The compression methods that can be applied to the input data.
+	enum CompressionMethods {
+		Gzip = 0;
+	};
+	// The width of the data in pixels
+	uint32 Width = 1;
+	// The height of the data in pixels
+	uint32 Height = 2;
+	// The depth of the data in pixels
+	uint32 Depth = 3;
+	// A compressed string array of the voxel data in the specified type
+	// The uncompressed length of the data array must equal Width * Height * Depth
+	bytes Data = 4;
+	// The value type of the data.
+	DataTypes DataType = 5;
+	// The compression method used on the Volume data.
+	CompressionMethods CompressionMethod = 6;
+}
+
+// A nullable double value.
+message DoubleValue {
+  // The double value.
+  double Value = 1;
+}
+// [END messages]
