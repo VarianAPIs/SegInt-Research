@@ -493,6 +493,7 @@ Back to [**Table of Contents**](#table-of-contents).
 ### Contributing Authors
 
 **Michael Liang**  
+<a href="mailto:michael.liang@varian.com">michael.liang@varian.com</a>  
 Software Engineer II
 
 Back to [**Table of Contents**](#table-of-contents).  
